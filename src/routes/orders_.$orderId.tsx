@@ -21,7 +21,7 @@ function Row({ k, v }: { k: string; v?: React.ReactNode }) {
 }
 
 function OrderDetail() {
-  const { orderId } = useParams({ from: "/orders/$orderId" });
+  const { orderId } = useParams({ from: "/orders_/$orderId" });
   const order = useOrders().find((o) => String(o.id) === orderId);
 
   if (!order) {
