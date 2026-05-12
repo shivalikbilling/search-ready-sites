@@ -78,9 +78,15 @@ export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
           Reference <span className="font-mono text-foreground">#{done}</span> — we'll be in touch shortly.
         </p>
         <div className="mt-6 flex justify-center gap-3">
-          <button onClick={() => nav({ to: "/orders" })} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
-            View My Orders
-          </button>
+          {mode === "quotation" ? (
+            <button onClick={() => nav({ to: "/quotations/$quoteId", params: { quoteId: String(done) } })} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+              View Ticket
+            </button>
+          ) : (
+            <button onClick={() => nav({ to: "/orders" })} className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+              View My Orders
+            </button>
+          )}
           <button onClick={() => setDone(null)} className="rounded-md border border-input bg-background px-4 py-2 text-sm font-semibold">
             New {mode === "order" ? "order" : "quotation"}
           </button>
