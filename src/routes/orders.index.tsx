@@ -3,7 +3,7 @@ import { PageShell } from "@/components/PageShell";
 import { OrdersTable } from "@/components/OrdersTable";
 import { useOrders } from "@/lib/store";
 
-export const Route = createFileRoute("/orders")({
+export const Route = createFileRoute("/orders/")({
   head: () => ({
     meta: [
       { title: "My Orders — Inkline" },

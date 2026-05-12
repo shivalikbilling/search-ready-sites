@@ -3,7 +3,7 @@ import { PageShell } from "@/components/PageShell";
 import { useOrders } from "@/lib/store";
 import { ArrowLeft } from "lucide-react";
 
-export const Route = createFileRoute("/orders_/$orderId")({
+export const Route = createFileRoute("/orders/$orderId")({
   head: () => ({
     meta: [{ title: "Order Details — Inkline" }],
   }),
