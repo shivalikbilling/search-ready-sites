@@ -9,38 +9,134 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as QuotationRouteImport } from './routes/quotation'
+import { Route as PlaceOrderRouteImport } from './routes/place-order'
+import { Route as PendingsRouteImport } from './routes/pendings'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as OrdersOrderIdRouteImport } from './routes/orders.$orderId'
 
+const QuotationRoute = QuotationRouteImport.update({
+  id: '/quotation',
+  path: '/quotation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaceOrderRoute = PlaceOrderRouteImport.update({
+  id: '/place-order',
+  path: '/place-order',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendingsRoute = PendingsRouteImport.update({
+  id: '/pendings',
+  path: '/pendings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersOrderIdRoute = OrdersOrderIdRouteImport.update({
+  id: '/$orderId',
+  path: '/$orderId',
+  getParentRoute: () => OrdersRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/pendings': typeof PendingsRoute
+  '/place-order': typeof PlaceOrderRoute
+  '/quotation': typeof QuotationRoute
+  '/orders/$orderId': typeof OrdersOrderIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/pendings': typeof PendingsRoute
+  '/place-order': typeof PlaceOrderRoute
+  '/quotation': typeof QuotationRoute
+  '/orders/$orderId': typeof OrdersOrderIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/orders': typeof OrdersRouteWithChildren
+  '/pendings': typeof PendingsRoute
+  '/place-order': typeof PlaceOrderRoute
+  '/quotation': typeof QuotationRoute
+  '/orders/$orderId': typeof OrdersOrderIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/orders'
+    | '/pendings'
+    | '/place-order'
+    | '/quotation'
+    | '/orders/$orderId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/orders'
+    | '/pendings'
+    | '/place-order'
+    | '/quotation'
+    | '/orders/$orderId'
+  id:
+    | '__root__'
+    | '/'
+    | '/orders'
+    | '/pendings'
+    | '/place-order'
+    | '/quotation'
+    | '/orders/$orderId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  OrdersRoute: typeof OrdersRouteWithChildren
+  PendingsRoute: typeof PendingsRoute
+  PlaceOrderRoute: typeof PlaceOrderRoute
+  QuotationRoute: typeof QuotationRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/quotation': {
+      id: '/quotation'
+      path: '/quotation'
+      fullPath: '/quotation'
+      preLoaderRoute: typeof QuotationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/place-order': {
+      id: '/place-order'
+      path: '/place-order'
+      fullPath: '/place-order'
+      preLoaderRoute: typeof PlaceOrderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pendings': {
+      id: '/pendings'
+      path: '/pendings'
+      fullPath: '/pendings'
+      preLoaderRoute: typeof PendingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +144,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders/$orderId': {
+      id: '/orders/$orderId'
+      path: '/$orderId'
+      fullPath: '/orders/$orderId'
+      preLoaderRoute: typeof OrdersOrderIdRouteImport
+      parentRoute: typeof OrdersRoute
+    }
   }
 }
 
+interface OrdersRouteChildren {
+  OrdersOrderIdRoute: typeof OrdersOrderIdRoute
+}
+
+const OrdersRouteChildren: OrdersRouteChildren = {
+  OrdersOrderIdRoute: OrdersOrderIdRoute,
+}
+
+const OrdersRouteWithChildren =
+  OrdersRoute._addFileChildren(OrdersRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  OrdersRoute: OrdersRouteWithChildren,
+  PendingsRoute: PendingsRoute,
+  PlaceOrderRoute: PlaceOrderRoute,
+  QuotationRoute: QuotationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
