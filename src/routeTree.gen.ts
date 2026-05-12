@@ -13,7 +13,9 @@ import { Route as QuotationRouteImport } from './routes/quotation'
 import { Route as PlaceOrderRouteImport } from './routes/place-order'
 import { Route as PendingsRouteImport } from './routes/pendings'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as QuotationsIndexRouteImport } from './routes/quotations.index'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
+import { Route as QuotationsQuoteIdRouteImport } from './routes/quotations.$quoteId'
 import { Route as OrdersOrderIdRouteImport } from './routes/orders.$orderId'
 
 const QuotationRoute = QuotationRouteImport.update({
@@ -36,9 +38,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuotationsIndexRoute = QuotationsIndexRouteImport.update({
+  id: '/quotations/',
+  path: '/quotations/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const OrdersIndexRoute = OrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const QuotationsQuoteIdRoute = QuotationsQuoteIdRouteImport.update({
+  id: '/quotations/$quoteId',
+  path: '/quotations/$quoteId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrdersOrderIdRoute = OrdersOrderIdRouteImport.update({
@@ -53,7 +65,9 @@ export interface FileRoutesByFullPath {
   '/place-order': typeof PlaceOrderRoute
   '/quotation': typeof QuotationRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
+  '/quotations/$quoteId': typeof QuotationsQuoteIdRoute
   '/orders/': typeof OrdersIndexRoute
+  '/quotations/': typeof QuotationsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -61,7 +75,9 @@ export interface FileRoutesByTo {
   '/place-order': typeof PlaceOrderRoute
   '/quotation': typeof QuotationRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
+  '/quotations/$quoteId': typeof QuotationsQuoteIdRoute
   '/orders': typeof OrdersIndexRoute
+  '/quotations': typeof QuotationsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -70,7 +86,9 @@ export interface FileRoutesById {
   '/place-order': typeof PlaceOrderRoute
   '/quotation': typeof QuotationRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
+  '/quotations/$quoteId': typeof QuotationsQuoteIdRoute
   '/orders/': typeof OrdersIndexRoute
+  '/quotations/': typeof QuotationsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -80,7 +98,9 @@ export interface FileRouteTypes {
     | '/place-order'
     | '/quotation'
     | '/orders/$orderId'
+    | '/quotations/$quoteId'
     | '/orders/'
+    | '/quotations/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -88,7 +108,9 @@ export interface FileRouteTypes {
     | '/place-order'
     | '/quotation'
     | '/orders/$orderId'
+    | '/quotations/$quoteId'
     | '/orders'
+    | '/quotations'
   id:
     | '__root__'
     | '/'
@@ -96,7 +118,9 @@ export interface FileRouteTypes {
     | '/place-order'
     | '/quotation'
     | '/orders/$orderId'
+    | '/quotations/$quoteId'
     | '/orders/'
+    | '/quotations/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -105,7 +129,9 @@ export interface RootRouteChildren {
   PlaceOrderRoute: typeof PlaceOrderRoute
   QuotationRoute: typeof QuotationRoute
   OrdersOrderIdRoute: typeof OrdersOrderIdRoute
+  QuotationsQuoteIdRoute: typeof QuotationsQuoteIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
+  QuotationsIndexRoute: typeof QuotationsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -138,11 +164,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/quotations/': {
+      id: '/quotations/'
+      path: '/quotations'
+      fullPath: '/quotations/'
+      preLoaderRoute: typeof QuotationsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/orders/': {
       id: '/orders/'
       path: '/orders'
       fullPath: '/orders/'
       preLoaderRoute: typeof OrdersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/quotations/$quoteId': {
+      id: '/quotations/$quoteId'
+      path: '/quotations/$quoteId'
+      fullPath: '/quotations/$quoteId'
+      preLoaderRoute: typeof QuotationsQuoteIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/orders/$orderId': {
@@ -161,7 +201,9 @@ const rootRouteChildren: RootRouteChildren = {
   PlaceOrderRoute: PlaceOrderRoute,
   QuotationRoute: QuotationRoute,
   OrdersOrderIdRoute: OrdersOrderIdRoute,
+  QuotationsQuoteIdRoute: QuotationsQuoteIdRoute,
   OrdersIndexRoute: OrdersIndexRoute,
+  QuotationsIndexRoute: QuotationsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

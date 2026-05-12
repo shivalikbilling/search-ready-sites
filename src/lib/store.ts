@@ -22,6 +22,24 @@ export interface OrderBase {
   cover?: { color: ColorMode; gsm?: number; lamination?: string; fileUrl?: string };
   binding?: string;
   kind: "order" | "quotation";
+  quote?: QuoteResponse;
+  quoteStatus?: "Awaiting" | "Quoted" | "Accepted" | "Declined";
+}
+
+export interface QuoteMessage {
+  at: string;
+  from: "customer" | "shop";
+  text: string;
+}
+
+export interface QuoteResponse {
+  unitPrice: number;
+  totalPrice: number;
+  leadTimeDays: number;
+  validUntil?: string;
+  notes?: string;
+  respondedAt: string;
+  thread: QuoteMessage[];
 }
 
 const KEY = "printshop.orders.v1";
@@ -80,6 +98,40 @@ export function addOrder(o: Omit<OrderBase, "id" | "date" | "receivedQty" | "sta
     status: "Pending",
     ...o,
   };
+  if (item.kind === "quotation" && !item.quoteStatus) item.quoteStatus = "Awaiting";
   write([item, ...list]);
   return item;
+}
+
+export function respondToQuote(id: number, resp: Omit<QuoteResponse, "respondedAt" | "thread">) {
+  const list = read();
+  const next = list.map((o) => {
+    if (o.id !== id) return o;
+    const prevThread = o.quote?.thread ?? [];
+    const thread: QuoteMessage[] = [
+      ...prevThread,
+      {
+        at: new Date().toISOString(),
+        from: "shop",
+        text: `Quoted ${resp.totalPrice.toLocaleString()} total (${resp.unitPrice}/unit), lead time ${resp.leadTimeDays} day(s).${resp.notes ? " " + resp.notes : ""}`,
+      },
+    ];
+    return { ...o, quoteStatus: "Quoted" as const, quote: { ...resp, respondedAt: new Date().toISOString(), thread } };
+  });
+  write(next);
+}
+
+export function appendQuoteMessage(id: number, from: "customer" | "shop", text: string) {
+  const list = read();
+  const next = list.map((o) => {
+    if (o.id !== id) return o;
+    const base = o.quote ?? { unitPrice: 0, totalPrice: 0, leadTimeDays: 0, respondedAt: "", thread: [] };
+    return { ...o, quote: { ...base, thread: [...base.thread, { at: new Date().toISOString(), from, text }] } };
+  });
+  write(next);
+}
+
+export function setQuoteStatus(id: number, status: "Accepted" | "Declined") {
+  const list = read();
+  write(list.map((o) => (o.id === id ? { ...o, quoteStatus: status } : o)));
 }
