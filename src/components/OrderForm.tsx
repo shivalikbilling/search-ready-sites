@@ -166,7 +166,11 @@ export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
                 </select>
               </Field>
               <Field label="Pages"><input type="number" className={inputCls} value={innerPages} onChange={(e) => setInnerPages(+e.target.value)} /></Field>
-              <Field label="Paper GSM"><input type="number" className={inputCls} value={innerGsm} onChange={(e) => setInnerGsm(+e.target.value)} /></Field>
+              <Field label="Paper GSM">
+                <select className={inputCls} value={innerGsm} onChange={(e) => setInnerGsm(+e.target.value)}>
+                  {settings.gsm.map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </Field>
               <Field label="Size"><input className={inputCls} value={innerSize} onChange={(e) => setInnerSize(e.target.value)} /></Field>
               <Field label={`Inner File URL${fileOptional ? " (optional)" : ""}`}>
                 <input className={inputCls} value={innerFile} onChange={(e) => setInnerFile(e.target.value)} placeholder="Drive / share URL" />
@@ -187,7 +191,11 @@ export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
                   {COLOR_MODES.map((c) => <option key={c}>{c}</option>)}
                 </select>
               </Field>
-              <Field label="Paper GSM"><input type="number" className={inputCls} value={coverGsm} onChange={(e) => setCoverGsm(+e.target.value)} /></Field>
+              <Field label="Paper GSM">
+                <select className={inputCls} value={coverGsm} onChange={(e) => setCoverGsm(+e.target.value)}>
+                  {settings.gsm.map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </Field>
               <Field label="Lamination">
                 <select className={inputCls} value={lamination} onChange={(e) => setLamination(e.target.value)}>
                   {LAMINATIONS.map((l) => <option key={l}>{l}</option>)}
