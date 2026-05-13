@@ -122,10 +122,14 @@ export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Size"><input className={inputCls} value={size} onChange={(e) => setSize(e.target.value)} /></Field>
             <Field label="GSM">
-              <input type="number" className={inputCls} value={isPoster ? 58 : gsm} disabled={isPoster} onChange={(e) => setGsm(+e.target.value)} />
+              <select className={inputCls} value={isPoster ? 58 : gsm} disabled={isPoster} onChange={(e) => setGsm(+e.target.value)}>
+                {settings.gsm.map((g) => <option key={g} value={g}>{g}</option>)}
+              </select>
             </Field>
             <Field label="Paper Quality">
-              <select className={inputCls} value={paper} onChange={(e) => setPaper(e.target.value)}>{PAPERS.map((p) => <option key={p}>{p}</option>)}</select>
+              <select className={inputCls} value={paper} onChange={(e) => setPaper(e.target.value)}>
+                {settings.papers.map((p) => <option key={p.id} value={p.name}>{p.name}</option>)}
+              </select>
             </Field>
             <Field label="Print Type">
               <select className={inputCls} value={isPoster ? "S/S" : printType} disabled={isPoster} onChange={(e) => setPrintType(e.target.value as PrintType)}>
