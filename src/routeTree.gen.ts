@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as QuotationRouteImport } from './routes/quotation'
 import { Route as PlaceOrderRouteImport } from './routes/place-order'
 import { Route as PendingsRouteImport } from './routes/pendings'
@@ -18,6 +19,11 @@ import { Route as OrdersIndexRouteImport } from './routes/orders.index'
 import { Route as QuotationsQuoteIdRouteImport } from './routes/quotations.$quoteId'
 import { Route as OrdersOrderIdRouteImport } from './routes/orders.$orderId'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuotationRoute = QuotationRouteImport.update({
   id: '/quotation',
   path: '/quotation',
@@ -64,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/pendings': typeof PendingsRoute
   '/place-order': typeof PlaceOrderRoute
   '/quotation': typeof QuotationRoute
+  '/settings': typeof SettingsRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/quotations/$quoteId': typeof QuotationsQuoteIdRoute
   '/orders/': typeof OrdersIndexRoute
@@ -74,6 +81,7 @@ export interface FileRoutesByTo {
   '/pendings': typeof PendingsRoute
   '/place-order': typeof PlaceOrderRoute
   '/quotation': typeof QuotationRoute
+  '/settings': typeof SettingsRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/quotations/$quoteId': typeof QuotationsQuoteIdRoute
   '/orders': typeof OrdersIndexRoute
@@ -85,6 +93,7 @@ export interface FileRoutesById {
   '/pendings': typeof PendingsRoute
   '/place-order': typeof PlaceOrderRoute
   '/quotation': typeof QuotationRoute
+  '/settings': typeof SettingsRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/quotations/$quoteId': typeof QuotationsQuoteIdRoute
   '/orders/': typeof OrdersIndexRoute
@@ -97,6 +106,7 @@ export interface FileRouteTypes {
     | '/pendings'
     | '/place-order'
     | '/quotation'
+    | '/settings'
     | '/orders/$orderId'
     | '/quotations/$quoteId'
     | '/orders/'
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/pendings'
     | '/place-order'
     | '/quotation'
+    | '/settings'
     | '/orders/$orderId'
     | '/quotations/$quoteId'
     | '/orders'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/pendings'
     | '/place-order'
     | '/quotation'
+    | '/settings'
     | '/orders/$orderId'
     | '/quotations/$quoteId'
     | '/orders/'
@@ -128,6 +140,7 @@ export interface RootRouteChildren {
   PendingsRoute: typeof PendingsRoute
   PlaceOrderRoute: typeof PlaceOrderRoute
   QuotationRoute: typeof QuotationRoute
+  SettingsRoute: typeof SettingsRoute
   OrdersOrderIdRoute: typeof OrdersOrderIdRoute
   QuotationsQuoteIdRoute: typeof QuotationsQuoteIdRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
@@ -136,6 +149,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quotation': {
       id: '/quotation'
       path: '/quotation'
@@ -200,6 +220,7 @@ const rootRouteChildren: RootRouteChildren = {
   PendingsRoute: PendingsRoute,
   PlaceOrderRoute: PlaceOrderRoute,
   QuotationRoute: QuotationRoute,
+  SettingsRoute: SettingsRoute,
   OrdersOrderIdRoute: OrdersOrderIdRoute,
   QuotationsQuoteIdRoute: QuotationsQuoteIdRoute,
   OrdersIndexRoute: OrdersIndexRoute,

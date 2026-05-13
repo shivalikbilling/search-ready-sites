@@ -8,6 +8,7 @@ const links = [
   { to: "/quotations", label: "Quotations" },
   { to: "/orders", label: "My Orders" },
   { to: "/pendings", label: "Pendings" },
+  { to: "/settings", label: "Settings" },
 ] as const;
 
 export function SiteHeader() {
