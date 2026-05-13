@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { addOrder, ColorMode, JobType, PrintType } from "@/lib/store";
-import { BINDINGS, COLOR_MODES, Field, JOB_TYPES, LAMINATIONS, PAPERS, PRINT_TYPES, inputCls } from "./form-bits";
+import { useSettings } from "@/lib/settings";
+import { BINDINGS, COLOR_MODES, Field, JOB_TYPES, LAMINATIONS, PRINT_TYPES, inputCls } from "./form-bits";
 import { CheckCircle2 } from "lucide-react";
 
 export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
   const nav = useNavigate();
+  const settings = useSettings();
   const [jobType, setJobType] = useState<JobType>("Leaflet/Pamphlet");
   const [jobName, setJobName] = useState("");
   const [qty, setQty] = useState(1000);
