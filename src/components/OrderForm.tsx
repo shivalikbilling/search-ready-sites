@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { addOrder, ColorMode, JobType, PrintType } from "@/lib/store";
-import { BINDINGS, COLOR_MODES, Field, JOB_TYPES, LAMINATIONS, PAPERS, PRINT_TYPES, inputCls } from "./form-bits";
+import { useSettings } from "@/lib/settings";
+import { BINDINGS, COLOR_MODES, Field, JOB_TYPES, LAMINATIONS, PRINT_TYPES, inputCls } from "./form-bits";
 import { CheckCircle2 } from "lucide-react";
 
 export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
   const nav = useNavigate();
+  const settings = useSettings();
   const [jobType, setJobType] = useState<JobType>("Leaflet/Pamphlet");
   const [jobName, setJobName] = useState("");
   const [qty, setQty] = useState(1000);
@@ -120,10 +122,14 @@ export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Field label="Size"><input className={inputCls} value={size} onChange={(e) => setSize(e.target.value)} /></Field>
             <Field label="GSM">
-              <input type="number" className={inputCls} value={isPoster ? 58 : gsm} disabled={isPoster} onChange={(e) => setGsm(+e.target.value)} />
+              <select className={inputCls} value={isPoster ? 58 : gsm} disabled={isPoster} onChange={(e) => setGsm(+e.target.value)}>
+                {settings.gsm.map((g) => <option key={g} value={g}>{g}</option>)}
+              </select>
             </Field>
             <Field label="Paper Quality">
-              <select className={inputCls} value={paper} onChange={(e) => setPaper(e.target.value)}>{PAPERS.map((p) => <option key={p}>{p}</option>)}</select>
+              <select className={inputCls} value={paper} onChange={(e) => setPaper(e.target.value)}>
+                {settings.papers.map((p) => <option key={p.id} value={p.name}>{p.name}</option>)}
+              </select>
             </Field>
             <Field label="Print Type">
               <select className={inputCls} value={isPoster ? "S/S" : printType} disabled={isPoster} onChange={(e) => setPrintType(e.target.value as PrintType)}>
@@ -160,7 +166,11 @@ export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
                 </select>
               </Field>
               <Field label="Pages"><input type="number" className={inputCls} value={innerPages} onChange={(e) => setInnerPages(+e.target.value)} /></Field>
-              <Field label="Paper GSM"><input type="number" className={inputCls} value={innerGsm} onChange={(e) => setInnerGsm(+e.target.value)} /></Field>
+              <Field label="Paper GSM">
+                <select className={inputCls} value={innerGsm} onChange={(e) => setInnerGsm(+e.target.value)}>
+                  {settings.gsm.map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </Field>
               <Field label="Size"><input className={inputCls} value={innerSize} onChange={(e) => setInnerSize(e.target.value)} /></Field>
               <Field label={`Inner File URL${fileOptional ? " (optional)" : ""}`}>
                 <input className={inputCls} value={innerFile} onChange={(e) => setInnerFile(e.target.value)} placeholder="Drive / share URL" />
@@ -181,7 +191,11 @@ export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
                   {COLOR_MODES.map((c) => <option key={c}>{c}</option>)}
                 </select>
               </Field>
-              <Field label="Paper GSM"><input type="number" className={inputCls} value={coverGsm} onChange={(e) => setCoverGsm(+e.target.value)} /></Field>
+              <Field label="Paper GSM">
+                <select className={inputCls} value={coverGsm} onChange={(e) => setCoverGsm(+e.target.value)}>
+                  {settings.gsm.map((g) => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </Field>
               <Field label="Lamination">
                 <select className={inputCls} value={lamination} onChange={(e) => setLamination(e.target.value)}>
                   {LAMINATIONS.map((l) => <option key={l}>{l}</option>)}
