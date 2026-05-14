@@ -91,6 +91,16 @@ function OrderDetail() {
             )}
           </section>
         )}
+
+        {order.custom && (
+          <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
+            <h2 className="mb-1 font-display text-lg font-semibold">Custom Job</h2>
+            <p className="mb-4 text-xs text-muted-foreground">Template: {order.custom.presetName}</p>
+            {Object.entries(order.custom.values).map(([k, v]) => (
+              <Row key={k} k={k} v={typeof v === "boolean" ? (v ? "Yes" : "No") : String(v)} />
+            ))}
+          </section>
+        )}
       </div>
 
       <section className="mt-6 rounded-xl border border-border bg-card p-6 shadow-sm">
