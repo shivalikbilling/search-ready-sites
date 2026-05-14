@@ -24,6 +24,7 @@ export interface OrderBase {
   kind: "order" | "quotation";
   quote?: QuoteResponse;
   quoteStatus?: "Awaiting" | "Quoted" | "Accepted" | "Declined";
+  custom?: { presetId: string; presetName: string; values: Record<string, string | number | boolean> };
 }
 
 export interface QuoteMessage {
