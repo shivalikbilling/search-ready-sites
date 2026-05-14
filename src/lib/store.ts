@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export type JobType = "Leaflet/Pamphlet" | "Brochure" | "Poster" | "Books";
+export type JobType = "Leaflet/Pamphlet" | "Brochure" | "Poster" | "Books" | "Custom";
 export type PrintType = "S/S" | "F/B";
 export type ColorMode = "Single" | "Double" | "Multi";
 
