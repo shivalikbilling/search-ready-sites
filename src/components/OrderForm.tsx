@@ -34,22 +34,50 @@ export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
 
   const [done, setDone] = useState<number | null>(null);
 
+  // Custom job
+  const [customJobId, setCustomJobId] = useState<string>("");
+  const [customValues, setCustomValues] = useState<CustomValues>({});
+  const activeCustom = settings.customJobs.find((j) => j.id === customJobId);
+
+  useEffect(() => {
+    if (jobType !== "Custom") return;
+    if (!customJobId && settings.customJobs[0]) {
+      setCustomJobId(settings.customJobs[0].id);
+    }
+  }, [jobType, settings.customJobs, customJobId]);
+
+  useEffect(() => {
+    if (activeCustom) setCustomValues(defaultsFor(activeCustom));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customJobId]);
+
   const isPoster = jobType === "Poster";
   const isLeaflet = jobType === "Leaflet/Pamphlet";
   const isBook = jobType === "Books" || jobType === "Brochure";
+  const isCustom = jobType === "Custom";
   const fileOptional = mode === "quotation";
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
+    const customQtyField = activeCustom?.fields.find((f) => /qty|quantity/i.test(f.label));
+    const effectiveQty =
+      isCustom && customQtyField ? Number(customValues[customQtyField.id] || qty) : qty;
+
     const base = {
       kind: mode,
       jobType,
-      jobName: jobName || `${jobType} order`,
-      qty,
+      jobName:
+        jobName || (isCustom && activeCustom ? `${activeCustom.name} order` : `${jobType} order`),
+      qty: effectiveQty,
     } as const;
 
     let payload: Parameters<typeof addOrder>[0];
-    if (isBook) {
+    if (isCustom && activeCustom) {
+      payload = {
+        ...base,
+        custom: { presetId: activeCustom.id, presetName: activeCustom.name, values: customValues },
+      };
+    } else if (isBook) {
       payload = {
         ...base,
         inner: { color: innerColor, pages: innerPages, gsm: innerGsm, size: innerSize, fileUrl: innerFile },
