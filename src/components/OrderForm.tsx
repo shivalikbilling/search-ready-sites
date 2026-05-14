@@ -175,6 +175,70 @@ export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
         </section>
       )}
 
+      {isCustom && (
+        <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+          <div className="relative border-b border-border bg-gradient-to-br from-fuchsia-500/10 via-violet-500/10 to-sky-500/10 p-6">
+            <div className="flex items-center gap-3">
+              <span className="grid h-10 w-10 place-items-center rounded-lg bg-gradient-to-br from-fuchsia-500 to-violet-600 text-white shadow-md">
+                <Sparkles className="h-5 w-5" />
+              </span>
+              <div className="flex-1">
+                <h2 className="font-display text-xl font-semibold">Custom Job</h2>
+                <p className="text-sm text-muted-foreground">
+                  {settings.customJobs.length === 0
+                    ? "No templates yet — create one in Settings → Custom Job Templates."
+                    : "Pick a template, then fill in the fields you defined."}
+                </p>
+              </div>
+            </div>
+
+            {settings.customJobs.length > 0 && (
+              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {settings.customJobs.map((j) => {
+                  const active = j.id === customJobId;
+                  return (
+                    <button
+                      type="button"
+                      key={j.id}
+                      onClick={() => setCustomJobId(j.id)}
+                      className={[
+                        "group relative rounded-xl border p-4 text-left transition-all",
+                        active
+                          ? "border-accent bg-card shadow-md ring-2 ring-accent/40"
+                          : "border-border bg-card/60 hover:border-accent/60 hover:shadow-sm",
+                      ].join(" ")}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{j.icon || "✨"}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate font-display text-sm font-semibold">{j.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {j.fields.length} field{j.fields.length === 1 ? "" : "s"}
+                          </p>
+                        </div>
+                      </div>
+                      {j.description && (
+                        <p className="mt-2 line-clamp-2 text-xs text-muted-foreground">{j.description}</p>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {activeCustom && (
+            <div className="p-6">
+              <CustomJobFields
+                job={activeCustom}
+                values={customValues}
+                onChange={setCustomValues}
+              />
+            </div>
+          )}
+        </section>
+      )}
+
       {isBook && (
         <>
           <section className="rounded-xl border border-border bg-card p-6 shadow-sm">
