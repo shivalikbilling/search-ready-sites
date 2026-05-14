@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { addOrder, ColorMode, JobType, PrintType } from "@/lib/store";
 import { useSettings } from "@/lib/settings";
 import { BINDINGS, COLOR_MODES, Field, JOB_TYPES, LAMINATIONS, PRINT_TYPES, inputCls } from "./form-bits";
-import { CheckCircle2 } from "lucide-react";
+import { CustomJobFields, CustomValues, defaultsFor } from "./CustomJobFields";
+import { CheckCircle2, Sparkles } from "lucide-react";
 
 export function OrderForm({ mode }: { mode: "order" | "quotation" }) {
   const nav = useNavigate();
