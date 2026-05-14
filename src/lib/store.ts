@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export type JobType = "Leaflet/Pamphlet" | "Brochure" | "Poster" | "Books";
+export type JobType = "Leaflet/Pamphlet" | "Brochure" | "Poster" | "Books" | "Custom";
 export type PrintType = "S/S" | "F/B";
 export type ColorMode = "Single" | "Double" | "Multi";
 
@@ -24,6 +24,7 @@ export interface OrderBase {
   kind: "order" | "quotation";
   quote?: QuoteResponse;
   quoteStatus?: "Awaiting" | "Quoted" | "Accepted" | "Declined";
+  custom?: { presetId: string; presetName: string; values: Record<string, string | number | boolean> };
 }
 
 export interface QuoteMessage {
