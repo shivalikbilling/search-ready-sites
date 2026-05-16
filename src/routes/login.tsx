@@ -97,18 +97,6 @@ function LoginPage() {
               search-ready workspace.
             </p>
 
-            <div className="mt-8 grid grid-cols-3 gap-3">
-              {[
-                { k: "Live jobs", v: "12" },
-                { k: "On press", v: "4" },
-                { k: "Dispatched", v: "38" },
-              ].map((s) => (
-                <div key={s.k} className="rounded-lg border border-border/60 bg-card/70 p-3 backdrop-blur">
-                  <div className="font-display text-2xl font-bold">{s.v}</div>
-                  <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{s.k}</div>
-                </div>
-              ))}
-            </div>
           </div>
 
           <p className="text-xs text-muted-foreground">
