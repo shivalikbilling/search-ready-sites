@@ -302,6 +302,111 @@ function NewChallan() {
         />
       </div>
 
+      {/* Dispatch queue picker */}
+      <div className="mb-6 overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/5 to-transparent shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 p-5">
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-accent text-accent-foreground">
+              <Inbox className="h-4 w-4" />
+            </span>
+            <div>
+              <h3 className="font-display text-base font-semibold">Pull from Dispatch Queue</h3>
+              <p className="text-xs text-muted-foreground">
+                Tick the books going out in this vehicle — they'll be added as lines and marked dispatched on save.
+              </p>
+            </div>
+          </div>
+          <Link to="/dispatch" className="text-xs font-semibold text-accent hover:underline">
+            Manage queue →
+          </Link>
+        </div>
+
+        {queuedItems.length === 0 ? (
+          <div className="p-8 text-center">
+            <Inbox className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
+            <p className="text-sm text-muted-foreground">
+              No books in the queue.{" "}
+              <Link to="/dispatch" className="font-semibold text-accent hover:underline">
+                Record books first
+              </Link>
+              , then come back to bundle them.
+            </p>
+          </div>
+        ) : (
+          <div className="max-h-72 overflow-y-auto">
+            {Object.entries(
+              queuedItems.reduce<Record<string, DispatchItem[]>>((acc, it) => {
+                const k = it.buyer?.trim() || "— No buyer —";
+                (acc[k] ||= []).push(it);
+                return acc;
+              }, {})
+            ).map(([buyerName, items]) => (
+              <div key={buyerName} className="border-b border-border/40 last:border-0">
+                <div className="flex items-center justify-between bg-muted/40 px-5 py-2 text-xs">
+                  <span className="font-semibold uppercase tracking-wider text-muted-foreground">{buyerName}</span>
+                  <button
+                    type="button"
+                    onClick={() => selectAllForBuyer(buyerName === "— No buyer —" ? "" : buyerName)}
+                    className="font-semibold text-accent hover:underline"
+                  >
+                    Select all ({items.length})
+                  </button>
+                </div>
+                <ul className="divide-y divide-border/40">
+                  {items.map((i) => {
+                    const checked = sourceItemIds.includes(i.id);
+                    return (
+                      <li key={i.id}>
+                        <label
+                          className={`flex cursor-pointer items-center gap-3 px-5 py-2.5 text-sm transition ${
+                            checked ? "bg-accent/10" : "hover:bg-secondary/40"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleQueueItem(i)}
+                            className="h-4 w-4 rounded border-input accent-accent"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate font-medium">{i.jobName}</div>
+                            {i.description && (
+                              <div className="truncate text-xs text-muted-foreground">{i.description}</div>
+                            )}
+                          </div>
+                          <div className="shrink-0 text-right tabular-nums">
+                            <div className="text-sm font-semibold">{i.qty.toLocaleString()}</div>
+                            {i.rate > 0 && <div className="text-[11px] text-muted-foreground">₹ {i.rate}/u</div>}
+                          </div>
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {sourceItemIds.length > 0 && (
+          <div className="flex items-center justify-between border-t border-border/60 bg-accent/10 px-5 py-3 text-xs">
+            <span className="font-semibold text-accent">
+              {sourceItemIds.length} book{sourceItemIds.length === 1 ? "" : "s"} pulled into this challan
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setSourceItemIds([]);
+                setLines([newLine()]);
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Clear selection
+            </button>
+          </div>
+        )}
+      </div>
+
       {/* Lines */}
       <div className="mb-6 rounded-2xl border border-border bg-card shadow-sm">
         <div className="flex items-center justify-between border-b border-border/60 p-5">
