@@ -14,6 +14,7 @@ import { Route as QuotationRouteImport } from './routes/quotation'
 import { Route as PlaceOrderRouteImport } from './routes/place-order'
 import { Route as PendingsRouteImport } from './routes/pendings'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as DispatchRouteImport } from './routes/dispatch'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuotationsIndexRouteImport } from './routes/quotations.index'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
@@ -45,6 +46,11 @@ const PendingsRoute = PendingsRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DispatchRoute = DispatchRouteImport.update({
+  id: '/dispatch',
+  path: '/dispatch',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -85,6 +91,7 @@ const ChallansNewRoute = ChallansNewRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dispatch': typeof DispatchRoute
   '/login': typeof LoginRoute
   '/pendings': typeof PendingsRoute
   '/place-order': typeof PlaceOrderRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dispatch': typeof DispatchRoute
   '/login': typeof LoginRoute
   '/pendings': typeof PendingsRoute
   '/place-order': typeof PlaceOrderRoute
@@ -114,6 +122,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/dispatch': typeof DispatchRoute
   '/login': typeof LoginRoute
   '/pendings': typeof PendingsRoute
   '/place-order': typeof PlaceOrderRoute
@@ -130,6 +139,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/dispatch'
     | '/login'
     | '/pendings'
     | '/place-order'
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/dispatch'
     | '/login'
     | '/pendings'
     | '/place-order'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/dispatch'
     | '/login'
     | '/pendings'
     | '/place-order'
@@ -173,6 +185,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DispatchRoute: typeof DispatchRoute
   LoginRoute: typeof LoginRoute
   PendingsRoute: typeof PendingsRoute
   PlaceOrderRoute: typeof PlaceOrderRoute
@@ -221,6 +234,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dispatch': {
+      id: '/dispatch'
+      path: '/dispatch'
+      fullPath: '/dispatch'
+      preLoaderRoute: typeof DispatchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -277,6 +297,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DispatchRoute: DispatchRoute,
   LoginRoute: LoginRoute,
   PendingsRoute: PendingsRoute,
   PlaceOrderRoute: PlaceOrderRoute,
@@ -292,3 +313,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
