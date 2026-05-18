@@ -125,6 +125,55 @@ function NewChallan() {
   const [remark, setRemark] = useState("");
   const [toc, setToc] = useState(DEFAULT_TOC);
   const [lines, setLines] = useState<ChallanLine[]>([newLine()]);
+  const [sourceItemIds, setSourceItemIds] = useState<string[]>([]);
+
+  const dispatchItems = useDispatchItems();
+  const queuedItems = useMemo(() => dispatchItems.filter((d) => d.status === "queued"), [dispatchItems]);
+
+  function lineFromItem(item: DispatchItem): ChallanLine {
+    return {
+      id: "l-" + Math.random().toString(36).slice(2, 8),
+      jobName: item.jobName,
+      description: item.description,
+      pages: item.pages,
+      qty: item.qty,
+      rate: item.rate,
+      amount: +(((Number(item.qty) || 0) * (Number(item.rate) || 0)).toFixed(2)),
+      remark: item.remark,
+    };
+  }
+
+  function toggleQueueItem(item: DispatchItem) {
+    if (sourceItemIds.includes(item.id)) {
+      setSourceItemIds((cur) => cur.filter((x) => x !== item.id));
+      setLines((cur) => {
+        const filtered = cur.filter((l) => l.jobName !== item.jobName || l.qty !== item.qty);
+        return filtered.length ? filtered : [newLine()];
+      });
+      return;
+    }
+    setSourceItemIds((cur) => [...cur, item.id]);
+    setLines((cur) => {
+      const next = cur.filter((l) => l.jobName.trim() || l.qty > 0);
+      return [...next, lineFromItem(item)];
+    });
+    if (item.buyer && !buyer.name) {
+      setBuyer((b) => ({ ...b, name: item.buyer! }));
+    }
+  }
+
+  function selectAllForBuyer(buyerName: string) {
+    const matches = queuedItems.filter(
+      (i) => (i.buyer || "").trim().toLowerCase() === buyerName.trim().toLowerCase() && !sourceItemIds.includes(i.id)
+    );
+    if (matches.length === 0) return;
+    setSourceItemIds((cur) => [...cur, ...matches.map((m) => m.id)]);
+    setLines((cur) => {
+      const cleaned = cur.filter((l) => l.jobName.trim() || l.qty > 0);
+      return [...cleaned, ...matches.map(lineFromItem)];
+    });
+    if (buyerName && !buyer.name) setBuyer((b) => ({ ...b, name: buyerName }));
+  }
 
   const subtotal = useMemo(() => lines.reduce((s, l) => s + (Number(l.amount) || 0), 0), [lines]);
 
