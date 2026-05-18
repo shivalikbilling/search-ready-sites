@@ -10,7 +10,8 @@ import {
   type ChallanLine,
   type Party,
 } from "@/lib/challans";
-import { ArrowLeft, BookPlus, Check, Copy, FileText, Plus, Sparkles, Trash2, Truck } from "lucide-react";
+import { markDispatched, useDispatchItems, type DispatchItem } from "@/lib/dispatch";
+import { ArrowLeft, BookPlus, Check, Copy, FileText, Inbox, Plus, Sparkles, Trash2, Truck } from "lucide-react";
 
 export const Route = createFileRoute("/challans/new")({
   head: () => ({ meta: [{ title: "Create Challan — Shivalik" }] }),
@@ -124,6 +125,55 @@ function NewChallan() {
   const [remark, setRemark] = useState("");
   const [toc, setToc] = useState(DEFAULT_TOC);
   const [lines, setLines] = useState<ChallanLine[]>([newLine()]);
+  const [sourceItemIds, setSourceItemIds] = useState<string[]>([]);
+
+  const dispatchItems = useDispatchItems();
+  const queuedItems = useMemo(() => dispatchItems.filter((d) => d.status === "queued"), [dispatchItems]);
+
+  function lineFromItem(item: DispatchItem): ChallanLine {
+    return {
+      id: "l-" + Math.random().toString(36).slice(2, 8),
+      jobName: item.jobName,
+      description: item.description,
+      pages: item.pages,
+      qty: item.qty,
+      rate: item.rate,
+      amount: +(((Number(item.qty) || 0) * (Number(item.rate) || 0)).toFixed(2)),
+      remark: item.remark,
+    };
+  }
+
+  function toggleQueueItem(item: DispatchItem) {
+    if (sourceItemIds.includes(item.id)) {
+      setSourceItemIds((cur) => cur.filter((x) => x !== item.id));
+      setLines((cur) => {
+        const filtered = cur.filter((l) => l.jobName !== item.jobName || l.qty !== item.qty);
+        return filtered.length ? filtered : [newLine()];
+      });
+      return;
+    }
+    setSourceItemIds((cur) => [...cur, item.id]);
+    setLines((cur) => {
+      const next = cur.filter((l) => l.jobName.trim() || l.qty > 0);
+      return [...next, lineFromItem(item)];
+    });
+    if (item.buyer && !buyer.name) {
+      setBuyer((b) => ({ ...b, name: item.buyer! }));
+    }
+  }
+
+  function selectAllForBuyer(buyerName: string) {
+    const matches = queuedItems.filter(
+      (i) => (i.buyer || "").trim().toLowerCase() === buyerName.trim().toLowerCase() && !sourceItemIds.includes(i.id)
+    );
+    if (matches.length === 0) return;
+    setSourceItemIds((cur) => [...cur, ...matches.map((m) => m.id)]);
+    setLines((cur) => {
+      const cleaned = cur.filter((l) => l.jobName.trim() || l.qty > 0);
+      return [...cleaned, ...matches.map(lineFromItem)];
+    });
+    if (buyerName && !buyer.name) setBuyer((b) => ({ ...b, name: buyerName }));
+  }
 
   const subtotal = useMemo(() => lines.reduce((s, l) => s + (Number(l.amount) || 0), 0), [lines]);
 
@@ -196,6 +246,7 @@ function NewChallan() {
       lines: lines.filter((l) => l.jobName.trim()),
       subtotal,
     });
+    if (sourceItemIds.length) markDispatched(sourceItemIds, c.id, c.number);
     navigate({ to: "/challans" });
     return c;
   }
@@ -249,6 +300,111 @@ function NewChallan() {
             </button>
           }
         />
+      </div>
+
+      {/* Dispatch queue picker */}
+      <div className="mb-6 overflow-hidden rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/5 to-transparent shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/60 p-5">
+          <div className="flex items-center gap-3">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-accent text-accent-foreground">
+              <Inbox className="h-4 w-4" />
+            </span>
+            <div>
+              <h3 className="font-display text-base font-semibold">Pull from Dispatch Queue</h3>
+              <p className="text-xs text-muted-foreground">
+                Tick the books going out in this vehicle — they'll be added as lines and marked dispatched on save.
+              </p>
+            </div>
+          </div>
+          <Link to="/dispatch" className="text-xs font-semibold text-accent hover:underline">
+            Manage queue →
+          </Link>
+        </div>
+
+        {queuedItems.length === 0 ? (
+          <div className="p-8 text-center">
+            <Inbox className="mx-auto mb-2 h-8 w-8 text-muted-foreground/40" />
+            <p className="text-sm text-muted-foreground">
+              No books in the queue.{" "}
+              <Link to="/dispatch" className="font-semibold text-accent hover:underline">
+                Record books first
+              </Link>
+              , then come back to bundle them.
+            </p>
+          </div>
+        ) : (
+          <div className="max-h-72 overflow-y-auto">
+            {Object.entries(
+              queuedItems.reduce<Record<string, DispatchItem[]>>((acc, it) => {
+                const k = it.buyer?.trim() || "— No buyer —";
+                (acc[k] ||= []).push(it);
+                return acc;
+              }, {})
+            ).map(([buyerName, items]) => (
+              <div key={buyerName} className="border-b border-border/40 last:border-0">
+                <div className="flex items-center justify-between bg-muted/40 px-5 py-2 text-xs">
+                  <span className="font-semibold uppercase tracking-wider text-muted-foreground">{buyerName}</span>
+                  <button
+                    type="button"
+                    onClick={() => selectAllForBuyer(buyerName === "— No buyer —" ? "" : buyerName)}
+                    className="font-semibold text-accent hover:underline"
+                  >
+                    Select all ({items.length})
+                  </button>
+                </div>
+                <ul className="divide-y divide-border/40">
+                  {items.map((i) => {
+                    const checked = sourceItemIds.includes(i.id);
+                    return (
+                      <li key={i.id}>
+                        <label
+                          className={`flex cursor-pointer items-center gap-3 px-5 py-2.5 text-sm transition ${
+                            checked ? "bg-accent/10" : "hover:bg-secondary/40"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleQueueItem(i)}
+                            className="h-4 w-4 rounded border-input accent-accent"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate font-medium">{i.jobName}</div>
+                            {i.description && (
+                              <div className="truncate text-xs text-muted-foreground">{i.description}</div>
+                            )}
+                          </div>
+                          <div className="shrink-0 text-right tabular-nums">
+                            <div className="text-sm font-semibold">{i.qty.toLocaleString()}</div>
+                            {i.rate > 0 && <div className="text-[11px] text-muted-foreground">₹ {i.rate}/u</div>}
+                          </div>
+                        </label>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {sourceItemIds.length > 0 && (
+          <div className="flex items-center justify-between border-t border-border/60 bg-accent/10 px-5 py-3 text-xs">
+            <span className="font-semibold text-accent">
+              {sourceItemIds.length} book{sourceItemIds.length === 1 ? "" : "s"} pulled into this challan
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setSourceItemIds([]);
+                setLines([newLine()]);
+              }}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              Clear selection
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Lines */}
