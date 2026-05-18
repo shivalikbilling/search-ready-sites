@@ -246,7 +246,10 @@ function NewChallan() {
       lines: lines.filter((l) => l.jobName.trim()),
       subtotal,
     });
+    if (sourceItemIds.length) markDispatched(sourceItemIds, c.id, c.number);
     navigate({ to: "/challans" });
+    return c;
+  }
     return c;
   }
 
