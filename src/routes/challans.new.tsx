@@ -250,8 +250,6 @@ function NewChallan() {
     navigate({ to: "/challans" });
     return c;
   }
-    return c;
-  }
 
   return (
     <PageShell title="Create Challan" lead="Compose a delivery challan with multiple books, buyer & ship-to, and per-job remarks.">
