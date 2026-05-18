@@ -9,6 +9,7 @@ const links = [
   { to: "/quotation", label: "Get Quotation" },
   { to: "/quotations", label: "Quotations" },
   { to: "/orders", label: "My Orders" },
+  { to: "/dispatch", label: "Dispatch" },
   { to: "/challans", label: "Challans" },
   { to: "/pendings", label: "Pendings" },
   { to: "/settings", label: "Settings" },
