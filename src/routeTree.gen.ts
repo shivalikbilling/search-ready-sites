@@ -17,8 +17,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as QuotationsIndexRouteImport } from './routes/quotations.index'
 import { Route as OrdersIndexRouteImport } from './routes/orders.index'
+import { Route as ChallansIndexRouteImport } from './routes/challans.index'
 import { Route as QuotationsQuoteIdRouteImport } from './routes/quotations.$quoteId'
 import { Route as OrdersOrderIdRouteImport } from './routes/orders.$orderId'
+import { Route as ChallansNewRouteImport } from './routes/challans.new'
 
 const SettingsRoute = SettingsRouteImport.update({
   id: '/settings',
@@ -60,6 +62,11 @@ const OrdersIndexRoute = OrdersIndexRouteImport.update({
   path: '/orders/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChallansIndexRoute = ChallansIndexRouteImport.update({
+  id: '/challans/',
+  path: '/challans/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuotationsQuoteIdRoute = QuotationsQuoteIdRouteImport.update({
   id: '/quotations/$quoteId',
   path: '/quotations/$quoteId',
@@ -70,6 +77,11 @@ const OrdersOrderIdRoute = OrdersOrderIdRouteImport.update({
   path: '/orders/$orderId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ChallansNewRoute = ChallansNewRouteImport.update({
+  id: '/challans/new',
+  path: '/challans/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -78,8 +90,10 @@ export interface FileRoutesByFullPath {
   '/place-order': typeof PlaceOrderRoute
   '/quotation': typeof QuotationRoute
   '/settings': typeof SettingsRoute
+  '/challans/new': typeof ChallansNewRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/quotations/$quoteId': typeof QuotationsQuoteIdRoute
+  '/challans/': typeof ChallansIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/quotations/': typeof QuotationsIndexRoute
 }
@@ -90,8 +104,10 @@ export interface FileRoutesByTo {
   '/place-order': typeof PlaceOrderRoute
   '/quotation': typeof QuotationRoute
   '/settings': typeof SettingsRoute
+  '/challans/new': typeof ChallansNewRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/quotations/$quoteId': typeof QuotationsQuoteIdRoute
+  '/challans': typeof ChallansIndexRoute
   '/orders': typeof OrdersIndexRoute
   '/quotations': typeof QuotationsIndexRoute
 }
@@ -103,8 +119,10 @@ export interface FileRoutesById {
   '/place-order': typeof PlaceOrderRoute
   '/quotation': typeof QuotationRoute
   '/settings': typeof SettingsRoute
+  '/challans/new': typeof ChallansNewRoute
   '/orders/$orderId': typeof OrdersOrderIdRoute
   '/quotations/$quoteId': typeof QuotationsQuoteIdRoute
+  '/challans/': typeof ChallansIndexRoute
   '/orders/': typeof OrdersIndexRoute
   '/quotations/': typeof QuotationsIndexRoute
 }
@@ -117,8 +135,10 @@ export interface FileRouteTypes {
     | '/place-order'
     | '/quotation'
     | '/settings'
+    | '/challans/new'
     | '/orders/$orderId'
     | '/quotations/$quoteId'
+    | '/challans/'
     | '/orders/'
     | '/quotations/'
   fileRoutesByTo: FileRoutesByTo
@@ -129,8 +149,10 @@ export interface FileRouteTypes {
     | '/place-order'
     | '/quotation'
     | '/settings'
+    | '/challans/new'
     | '/orders/$orderId'
     | '/quotations/$quoteId'
+    | '/challans'
     | '/orders'
     | '/quotations'
   id:
@@ -141,8 +163,10 @@ export interface FileRouteTypes {
     | '/place-order'
     | '/quotation'
     | '/settings'
+    | '/challans/new'
     | '/orders/$orderId'
     | '/quotations/$quoteId'
+    | '/challans/'
     | '/orders/'
     | '/quotations/'
   fileRoutesById: FileRoutesById
@@ -154,8 +178,10 @@ export interface RootRouteChildren {
   PlaceOrderRoute: typeof PlaceOrderRoute
   QuotationRoute: typeof QuotationRoute
   SettingsRoute: typeof SettingsRoute
+  ChallansNewRoute: typeof ChallansNewRoute
   OrdersOrderIdRoute: typeof OrdersOrderIdRoute
   QuotationsQuoteIdRoute: typeof QuotationsQuoteIdRoute
+  ChallansIndexRoute: typeof ChallansIndexRoute
   OrdersIndexRoute: typeof OrdersIndexRoute
   QuotationsIndexRoute: typeof QuotationsIndexRoute
 }
@@ -218,6 +244,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/challans/': {
+      id: '/challans/'
+      path: '/challans'
+      fullPath: '/challans/'
+      preLoaderRoute: typeof ChallansIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quotations/$quoteId': {
       id: '/quotations/$quoteId'
       path: '/quotations/$quoteId'
@@ -232,6 +265,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersOrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/challans/new': {
+      id: '/challans/new'
+      path: '/challans/new'
+      fullPath: '/challans/new'
+      preLoaderRoute: typeof ChallansNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -242,8 +282,10 @@ const rootRouteChildren: RootRouteChildren = {
   PlaceOrderRoute: PlaceOrderRoute,
   QuotationRoute: QuotationRoute,
   SettingsRoute: SettingsRoute,
+  ChallansNewRoute: ChallansNewRoute,
   OrdersOrderIdRoute: OrdersOrderIdRoute,
   QuotationsQuoteIdRoute: QuotationsQuoteIdRoute,
+  ChallansIndexRoute: ChallansIndexRoute,
   OrdersIndexRoute: OrdersIndexRoute,
   QuotationsIndexRoute: QuotationsIndexRoute,
 }
